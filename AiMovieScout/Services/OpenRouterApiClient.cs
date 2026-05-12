@@ -3,20 +3,20 @@ using System.Text.Json;
 
 namespace AiMovieScout.Services
 {
-    public class OpenRouterApiClient
+    public class OpenRouterApiClient : IOpenRouterApiClient
     {
-        private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://openrouter.ai/api/v1";
+        readonly IHttpClientFactory _httpClientFactory;
+        readonly ILogger<OpenRouterApiClient> _logger;
 
-        public OpenRouterApiClient(string apiKey)
+        public OpenRouterApiClient(IHttpClientFactory httpClientFactory, ILogger<OpenRouterApiClient> logger)
         {
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+            _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task<string> ChatCompletionAsync(
-            string model,
             string message,
+            string model = "openai/gpt-5.2",
             CancellationToken cancellationToken = default)
         {
             var request = new
@@ -35,8 +35,9 @@ namespace AiMovieScout.Services
 
             try
             {
-                var response = await _httpClient.PostAsync(
-                    $"{BaseUrl}/chat/completions",
+                var httpClient = _httpClientFactory.CreateClient("OpenRouterApi");
+                var response = await httpClient.PostAsync(
+                    "chat/completions",
                     content,
                     cancellationToken
                 );
@@ -59,6 +60,7 @@ namespace AiMovieScout.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Ошибка API запроса");
                 throw new Exception($"Failed to get completion: {ex.Message}", ex);
             }
         }
