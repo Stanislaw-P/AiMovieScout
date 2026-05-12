@@ -245,13 +245,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Кнопка авторизации
-    const authBtn = document.getElementById('authBtn');
-    if (authBtn) {
-        authBtn.addEventListener('click', () => {
-            alert("🚪 Перенаправление на страницу авторизации\n(В реальном приложении переход на /Account/Login)");
-        });
-    }
-
     updateFavCounter();
 });

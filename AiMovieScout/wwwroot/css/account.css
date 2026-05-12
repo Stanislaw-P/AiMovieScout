@@ -1,0 +1,362 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #05070a;
+    color: #f0f3fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* кинематографичный фон (лёгкая анимация + паттерн) */
+.cinema-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 30%, #0a0c18 0%, #010101 100%);
+    overflow: hidden;
+}
+
+    .cinema-bg::before {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" opacity="0.08"><path fill="none" stroke="%23b084ff" stroke-width="1.2" d="M0 200 L800 200 M0 400 L800 400 M0 600 L800 600 M0 800 L800 800 M0 1000 L800 1000 M200 0 L200 1200 M400 0 L400 1200 M600 0 L600 1200"/><circle cx="400" cy="200" r="25" stroke="%23b084ff" fill="none" stroke-width="1"/><circle cx="200" cy="600" r="35" stroke="%23996eff" fill="none" stroke-width="0.8"/><rect x="550" y="800" width="80" height="120" stroke="%23c9aaff" fill="none" stroke-width="0.8"/></svg>');
+        background-repeat: repeat;
+        animation: slowPan 90s linear infinite;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+@keyframes slowPan {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(10%, 10%);
+    }
+}
+
+.overlay-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at 50% 40%, rgba(128, 90, 213, 0.12) 0%, rgba(0,0,0,0.7) 80%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* кнопка возврата на главную */
+.back-home-btn {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 30;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(176, 132, 255, 0.4);
+    border-radius: 60px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f0f0ff;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+    .back-home-btn i {
+        font-size: 1rem;
+        color: #c7a5ff;
+    }
+
+    .back-home-btn:hover {
+        background: rgba(128, 90, 213, 0.7);
+        border-color: #d4b0ff;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+/* основная карточка — точно по центру */
+.auth-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 480px;
+    margin: 2rem;
+    background: rgba(12, 12, 20, 0.72);
+    backdrop-filter: blur(18px);
+    border-radius: 48px;
+    border: 1px solid rgba(176, 132, 255, 0.35);
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(176, 132, 255, 0.2) inset;
+    transition: transform 0.2s;
+}
+
+@media (min-width: 640px) {
+    .auth-container {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+.auth-inner {
+    padding: 2.2rem 1.8rem 2.5rem;
+}
+
+.logo-header {
+    text-align: center;
+    margin-bottom: 1.8rem;
+}
+
+.logo-icon {
+    font-size: 2.8rem;
+    background: linear-gradient(145deg, #d9b4ff, #9b6eff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.logo-header h2 {
+    font-weight: 700;
+    font-size: 1.9rem;
+    background: linear-gradient(135deg, #FFF, #c9adff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.7rem;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.4rem;
+    border-radius: 60px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.8rem 0;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #b9c3e6;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    backdrop-filter: blur(4px);
+}
+
+    .tab-btn.active {
+        background: linear-gradient(105deg, #7a48df, #b084ff);
+        color: white;
+        box-shadow: 0 5px 15px rgba(128, 90, 213, 0.4);
+    }
+
+.form-group {
+    margin-bottom: 1.4rem;
+}
+
+.input-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #cfdcff;
+    letter-spacing: 0.3px;
+}
+
+.input-icon-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 32px;
+    padding: 0.2rem 0.8rem;
+    transition: all 0.2s;
+}
+
+    .input-icon-wrapper i {
+        color: #b084ff;
+        font-size: 1.1rem;
+        width: 32px;
+    }
+
+    .input-icon-wrapper input {
+        background: transparent;
+        border: none;
+        width: 100%;
+        padding: 0.85rem 0;
+        color: white;
+        font-size: 0.95rem;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .input-icon-wrapper:focus-within {
+        border-color: #b084ff;
+        box-shadow: 0 0 0 2px rgba(176, 132, 255, 0.2);
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .input-icon-wrapper input::placeholder {
+        color: #6a739c;
+        font-weight: 400;
+    }
+
+.auth-btn {
+    width: 100%;
+    background: linear-gradient(95deg, #7a4ad6, #b084ff);
+    border: none;
+    padding: 0.9rem;
+    border-radius: 60px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: white;
+    margin-top: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+}
+
+    .auth-btn:hover {
+        transform: scale(1.01);
+        background: linear-gradient(95deg, #8e5ef0, #c79bff);
+        box-shadow: 0 10px 20px rgba(128, 90, 213, 0.3);
+    }
+
+.separator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.8rem 0 1.2rem;
+    color: #6f7aa3;
+    font-size: 0.75rem;
+}
+
+.separator-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(176, 132, 255, 0.3);
+}
+
+.social-buttons {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+}
+
+.social-btn {
+    background: rgba(30, 30, 45, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #dfe6ff;
+    cursor: pointer;
+    transition: 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .social-btn i {
+        font-size: 1rem;
+    }
+
+    .social-btn:hover {
+        background: rgba(176, 132, 255, 0.3);
+        border-color: #b084ff;
+    }
+
+.footer-note {
+    text-align: center;
+    font-size: 0.7rem;
+    margin-top: 2rem;
+    color: #8e96bd;
+}
+
+.switch-message {
+    text-align: center;
+    margin-top: 1.2rem;
+    font-size: 0.85rem;
+}
+
+.switch-link {
+    background: none;
+    border: none;
+    color: #c7a5ff;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 6px;
+    font-family: inherit;
+}
+
+    .switch-link:hover {
+        text-decoration: underline;
+        color: #e2c8ff;
+    }
+
+.error-message {
+    background: rgba(255, 80, 80, 0.2);
+    border-left: 3px solid #ff7777;
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    color: #ffb7b7;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .auth-container {
+        margin: 1rem;
+    }
+
+    .auth-inner {
+        padding: 1.5rem;
+    }
+
+    .social-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .back-home-btn {
+        top: 16px;
+        left: 16px;
+        padding: 7px 16px;
+        font-size: 0.8rem;
+    }
+}
