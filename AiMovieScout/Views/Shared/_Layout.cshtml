@@ -36,14 +36,136 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="mt-5 text-center">
+        <p>✨ Рекомендации на основе анализа сюжетов — AI подбирает похожие по духу фильмы</p>
         <div class="container">
             &copy; 2026 - AiMovieScout - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        // ПРИМЕР: статический ответ от AI (имитация API). Потом замените на реальный fetch к вашему бэкенду/OpenAI
+        // В реальном проекте вы будете отправлять промт + список фильмов на свой сервер, а сервер — в нейросеть.
+        async function getRecommendationsFromAI(favoriteMovies) {
+            // ⚡ Здесь должен быть ваш реальный API Call.
+            // Пример структуры запроса на сервер (C#):
+            // POST /api/recommend
+            // Body: { "favoriteMovies": "Титаник, Достучаться до небес" }
+            // А сервер уже шлёт промт в OpenAI/LLM и возвращает JSON.
+
+            console.log("Отправляю в AI фильмы:", favoriteMovies);
+
+            // Эмуляция задержки сети и ответа LLM (уберите в продакшене)
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            // Для демонстрации — возвращаем статические рекомендации (в боевом режиме ответ придёт от вашего API)
+            // Здесь как раз используется логика "похожие по сюжету"
+            const mockDatabase = {
+                default: [
+                    { title: "Нечто", year: 1982, genre: "Научная фантастика, хоррор", reason: "Атмосфера изоляции и борьбы с неизвестным — как в небесных дорогах ‘Достучаться до небес’, только в Антарктиде." },
+                    { title: "Побег из Шоушенка", year: 1994, genre: "Драма", reason: "Тема надежды и дружбы, пронзительная судьба — близка к ‘Титанику’ и ‘Достучаться до небес’." },
+                    { title: "Облачный атлас", year: 2012, genre: "Фантастика, драма", reason: "Путешествие сквозь судьбы, чувство неизбежного и возвышенного — откликнется фанатам ‘Титаника’." },
+                    { title: "В диких условиях", year: 2007, genre: "Приключения, драма", reason: "Свобода, поиск себя и финальный катарсис — перекликается с философией ‘Достучаться до небес’." },
+                    { title: "Вечное сияние чистого разума", year: 2004, genre: "Романтика, фантастика", reason: "Глубокая эмоциональная связь и потеря — как в любовной линии ‘Титаника’." }
+                ]
+            };
+
+            // Если пользователь упомянул титаник или достучаться до небес, выдаём релевантное, иначе generic
+            let recommendations = [...mockDatabase.default];
+
+            // Простая эмуляция кастомизации на основе ключевых слов
+            if (favoriteMovies.toLowerCase().includes("боевик") || favoriteMovies.toLowerCase().includes("экшн")) {
+                recommendations = [
+                    { title: "Джон Уик", year: 2014, genre: "Боевик", reason: "стильный экшн и жажда мести" },
+                    { title: "Тёмный рыцарь", year: 2008, genre: "Боевик, драма", reason: "напряжённый сюжет, харизматичный герой" }
+                ];
+            }
+
+            return recommendations;
+        }
+
+        // Функция отрисовки рекомендаций
+        function renderRecommendations(recommendations) {
+            const resultsDiv = document.getElementById('resultsArea');
+            if (!recommendations || recommendations.length === 0) {
+                resultsDiv.innerHTML = `<div class="alert alert-secondary text-center bg-dark text-light">😔 Не удалось подобрать фильмы. Попробуйте другие названия.</div>`;
+                return;
+            }
+
+            let cardsHtml = '';
+            for (let rec of recommendations) {
+                cardsHtml += `
+                    <div class="col-12 col-md-6">
+                        <div class="recommend-card p-3 h-100">
+                            <h4 class="fw-bold mb-1">${escapeHtml(rec.title)}</h4>
+                            <div class="d-flex gap-2 mb-2">
+                                <span class="badge badge-year px-3 py-1 rounded-pill">📅 ${rec.year}</span>
+                                <span class="badge bg-dark text-light px-3 py-1 rounded-pill">🎭 ${escapeHtml(rec.genre)}</span>
+                            </div>
+                            <p class="mb-0 mt-2"><em>✨ ${escapeHtml(rec.reason)}</em></p>
+                        </div>
+                    </div>
+                `;
+            }
+            resultsDiv.innerHTML = cardsHtml;
+            // Прокрутка к результатам
+            document.getElementById('recommendationsBlock').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Обработка формы
+        const form = document.getElementById('recommendForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('moviesInput').value.trim();
+            if (!input) {
+                alert('Пожалуйста, введите хотя бы один любимый фильм');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = '🎞️ Анализируем сюжеты...';
+            submitBtn.disabled = true;
+
+            try {
+                // В реальном приложении здесь вы шлёте POST запрос на ваш контроллер:
+                // const response = await fetch('/api/recommendations', {
+                //    method: 'POST',
+                //    headers: { 'Content-Type': 'application/json' },
+                //    body: JSON.stringify({ favoriteMovies: input })
+                // });
+                // const data = await response.json();
+                // renderRecommendations(data.recommendations);
+
+                // Статическая заглушка с логикой AI
+                const recommendations = await getRecommendationsFromAI(input);
+                renderRecommendations(recommendations);
+
+            } catch (error) {
+                console.error("Ошибка получения рекомендаций", error);
+                document.getElementById('resultsArea').innerHTML = `<div class="alert alert-danger">⚠️ Ошибка сервиса. Попробуйте позже.</div>`;
+            } finally {
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Заполним пример для демо
+        document.getElementById('moviesInput').value = "Титаник, Достучаться до небес";
+    </script>
 </body>
 </html>
